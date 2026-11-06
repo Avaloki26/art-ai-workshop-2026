@@ -38,18 +38,17 @@ fatal: could not read Username for 'https://github.com': Device not configured
 3. `gh auth setup-git`，讓 Git 透過 `gh` 取得 GitHub 憑證。
 4. `git push -u origin main` 成功。
 
-### 4. 仍可改進：終端機的 `git` 路徑
+### 4. 終端機的 `git` 路徑（已解決）
 
-- 現象：直接執行 `git` 會先找到 `/usr/bin/git`，但這台電腦缺少 Xcode Command Line Tools，會跳出安裝提示：
+- 原本現象：直接執行 `git` 會先找到 `/usr/bin/git`，但這台電腦缺少 Xcode Command Line Tools，會跳出安裝提示：
 
   ```text
   xcode-select: note: No developer tools were found, requesting install.
   ```
 
-- 目前可用：`/opt/homebrew/bin/git`（2.56.0）與 `/opt/homebrew/bin/gh`。
-- 建議（尚未執行）：在 `~/.zprofile` 加入
+- 已做：建立 `~/.zprofile`，加入
   ```sh
   eval "$(/opt/homebrew/bin/brew shellenv)"
   ```
-  讓 `git`、`gh` 與其他 Homebrew 工具在一般終端機也能直接使用。
-- 待確認：是否要我幫你加入這行設定（會修改 `~/.zprofile`）。
+- 驗證：以 `zsh -l` 開啟登入 shell 後，`git` 指向 `/opt/homebrew/bin/git`（2.56.0），`gh` 指向 `/opt/homebrew/bin/gh`（2.103.3）。
+- 注意：已經開著的終端機不會自動套用，需重開終端機或執行 `source ~/.zprofile`。
