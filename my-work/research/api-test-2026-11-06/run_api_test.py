@@ -197,12 +197,12 @@ VISION_PROMPT = (
 )
 
 
-def run_vision(key: str) -> None:
+def run_vision(key: str, model: str) -> None:
     if not INPUT_IMAGE.exists():
         die(f"找不到測試圖片 {INPUT_IMAGE}")
 
     payload = {
-        "model": VISION_MODEL,
+        "model": model,
         "messages": [
             {
                 "role": "user",
@@ -216,7 +216,7 @@ def run_vision(key: str) -> None:
         "temperature": 0,
     }
 
-    print(f"[1/2] 視覺／OCR：{VISION_MODEL}")
+    print(f"[1/2] 視覺／OCR：{model}")
     print("      測試圖：Met Museum 公有領域《神奈川沖浪裏》(600×403 JPEG)")
     try:
         resp = api_request("/chat/completions", payload, key)
@@ -242,7 +242,7 @@ def run_vision(key: str) -> None:
         "## 1. 視覺／OCR（圖像描述 + 文字轉錄）",
         [
             f"- 時間：{now_tw()}",
-            f"- 模型：`{VISION_MODEL}`（{resp.get('model', VISION_MODEL)}）",
+            f"- 模型：`{model}`（{resp.get('model', model)}）",
             f"- 輸入：`my-work/artifacts/api-test-2026-11-06/input-great-wave.jpg`",
             "- 輸入來源：The Metropolitan Museum of Art, object 45434，公有領域（CC0）",
             "- 輸入尺寸：600×403 JPEG",
@@ -276,7 +276,7 @@ def cosine(a: list[float], b: list[float]) -> float:
     return dot / (na * nb) if na and nb else 0.0
 
 
-def run_embedding(key: str) -> None:
+def run_embedding(key: str, model: str) -> None:
     if not INPUT_IMAGE.exists():
         die(f"找不到測試圖片 {INPUT_IMAGE}")
 
@@ -284,9 +284,9 @@ def run_embedding(key: str) -> None:
     for _, text in TEXT_CANDIDATES:
         inputs.append({"content": [{"type": "text", "text": text}]})
 
-    payload = {"model": EMBEDDING_MODEL, "input": inputs, "encoding_format": "float"}
+    payload = {"model": model, "input": inputs, "encoding_format": "float"}
 
-    print(f"\n[2/2] 圖文 Embedding：{EMBEDDING_MODEL}")
+    print(f"\n[2/2] 圖文 Embedding：{model}")
     print("      比較：1 張圖 vs 4 句文字描述，計算餘弦相似度")
     try:
         resp = api_request("/embeddings", payload, key)
@@ -327,7 +327,7 @@ def run_embedding(key: str) -> None:
 
     out_md = ARTIFACT_DIR / "embedding-similarity.md"
     out_md.write_text(
-        f"# 圖文 Embedding 相似度\n\n- 模型：`{EMBEDDING_MODEL}`\n- 時間：{now_tw()}\n"
+        f"# 圖文 Embedding 相似度\n\n- 模型：`{model}`\n- 時間：{now_tw()}\n"
         f"- 圖片：`input-great-wave.jpg`\n- 向量維度：{dims}\n\n{table}\n",
         encoding="utf-8",
     )
@@ -336,7 +336,7 @@ def run_embedding(key: str) -> None:
         "## 2. 圖文 Embedding（語義檢索相似度）",
         [
             f"- 時間：{now_tw()}",
-            f"- 模型：`{EMBEDDING_MODEL}`（{resp.get('model', EMBEDDING_MODEL)}）",
+            f"- 模型：`{model}`（{resp.get('model', model)}）",
             f"- 輸入：1 張圖（`input-great-wave.jpg`）+ 4 句英文描述",
             f"- 參數：`encoding_format=float`；向量維度 {dims}",
             f"- 用量：prompt_tokens={usage.get('prompt_tokens')}, "
@@ -369,10 +369,6 @@ def main() -> None:
                     help=f"覆寫 embedding 模型（預設 {EMBEDDING_MODEL}）")
     args = ap.parse_args()
 
-    global VISION_MODEL, EMBEDDING_MODEL
-    VISION_MODEL = args.vision_model
-    EMBEDDING_MODEL = args.embedding_model
-
     if not any([args.check_key, args.vision, args.embedding, args.all]):
         ap.print_help()
         return
@@ -383,9 +379,9 @@ def main() -> None:
     if args.check_key:
         check_key(key)
     if args.all or args.vision:
-        run_vision(key)
+        run_vision(key, args.vision_model)
     if args.all or args.embedding:
-        run_embedding(key)
+        run_embedding(key, args.embedding_model)
 
 
 if __name__ == "__main__":
