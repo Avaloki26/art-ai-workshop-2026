@@ -1,0 +1,4 @@
+source_id,file_name,page,locator,section,content_type,summary,sha256,indexed_at
+SRC-001,sources/raw/test-sample-001.md,1,p.1（檔案第 13-22 行）,展籤資訊,object_label,"展件名稱、作者、年代、材質、尺寸與展品編號（測試示例）",34264879508506d62eaa05adf5ad6a5eb1a103601a77c1dbfb20b1ffe8954e7d,2026-11-06
+SRC-001,sources/raw/test-sample-001.md,2,p.2（檔案第 23-30 行）,題跋（局部轉錄）,transcription,"行書兩行題跋；「丙午」墨色較淡，疑似後添",34264879508506d62eaa05adf5ad6a5eb1a103601a77c1dbfb20b1ffe8954e7d,2026-11-06
+SRC-001,sources/raw/test-sample-001.md,3,p.3（檔案第 31-40 行）,收藏印記與保存狀況,transcription,"兩方印記、約 3 公分修補痕跡與「第 47 號」舊標籤",34264879508506d62eaa05adf5ad6a5eb1a103601a77c1dbfb20b1ffe8954e7d,2026-11-06
