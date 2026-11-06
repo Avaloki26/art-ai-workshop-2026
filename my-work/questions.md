@@ -2,39 +2,54 @@
 
 ## 2026-11-06｜課前環境與目錄整合測試
 
-> 本次沒有卡住超過 30 分鐘；以下是「已完成替代處理、但仍需本人確認」的項目。
+> 本次沒有卡住超過 30 分鐘。原本的兩個障礙（fork／推送授權）已經解決；以下是完整紀錄與仍可改進的地方。
 
-### 1. Fork 與 remote 已設定完成
+### 1. Fork、remote 與推送都已完成
 
 - 本地路徑：`/Users/kayiho/Documents/Default Project`
 - 你的 fork（`origin`）：`https://github.com/Avaloki26/art-ai-workshop-2026.git`
 - 官方倉庫（`upstream`）：`https://github.com/boan-anbo/art-ai-workshop-2026.git`
 - 分支與基底版本：`main`，`2fea758`
-- 已做：在 GitHub 建立 fork、把 `origin` 改成 fork、新增 `upstream`、完成 `git fetch --all`。
-- 尚未做：還沒有把本地 commit push 到 GitHub（見第 3 點）。
+- 第一個 commit：`e9f01af`（`Add first source index and reading note for SRC-001`）
+- 已推上 fork：`origin/main` 目前指向 `e9f01af`
+- 已做：建立 fork、設定 `origin`／`upstream`、`git fetch --all`、commit、`git push -u origin main`。
 
-### 2. Git 提交身分已設為 GitHub noreply
+### 2. Git 提交身分（可隨時更改）
 
 - 姓名：`Avaloki26`
 - Email：`352713637+Avaloki26@users.noreply.github.com`
 - 只寫在這個倉庫的 `.git/config`，沒有改動全域 Git 設定。
-- 待確認：若你想用真實姓名或學校／個人 Email 署名，請告知；可在 push 前修改並 amend 第一個 commit。
+- 若你想改用真實姓名或學校／個人 Email，請告知；可在下一個 commit 前修改。
 
-### 3. 尚未設定 GitHub 推送憑證
+### 3. 推送授權（已解決）
 
-- 現象：`git push --dry-run origin main` 回傳
-  `remote: No anonymous write access.`
-  `fatal: Authentication failed for 'https://github.com/Avaloki26/art-ai-workshop-2026.git/'`
-- 原因：瀏覽器登入 GitHub 不等於命令列 Git 已授權；目前這台電腦沒有 `gh`（GitHub CLI），也沒有可用的 Git 憑證。
-- 待確認：要用哪一種方式授權推送：
-  1. 安裝 GitHub CLI（`brew install gh`）後執行 `gh auth login`；
-  2. 使用 GitHub Desktop 登入並 push；
-  3. 建立 Personal Access Token（PAT），存進 macOS Keychain（不要把 token 貼進對話）；
-  4. 改用 SSH key（需先在 GitHub 加入公鑰）。
+原始錯誤（保留供日後排查）：
 
-### 4. 預設 `git` 指向 `/usr/bin/git`，但缺少 Xcode Command Line Tools
+```text
+remote: No anonymous write access.
+fatal: Authentication failed for 'https://github.com/Avaloki26/art-ai-workshop-2026.git/'
+fatal: could not read Username for 'https://github.com': Device not configured
+```
 
-- 錯誤訊息：`xcode-select: note: No developer tools were found, requesting install.`
-- 目前可用的替代：`/opt/homebrew/bin/git --version` → `git version 2.56.0`
-- 已做：只用 Homebrew 版 Git 檢查、clone、設定 remote 與 commit，未安裝 CLT、未重裝 Git。
-- 待確認：是否要調整 `PATH` 讓 `/opt/homebrew/bin` 優先，或安裝 Xcode CLT（兩者都尚未執行）。
+解決方式：
+
+1. `brew install gh`（GitHub CLI 2.103.3）。
+2. `gh auth login --hostname github.com --git-protocol https --web`，在瀏覽器以 `Avaloki26` 完成裝置授權。
+3. `gh auth setup-git`，讓 Git 透過 `gh` 取得 GitHub 憑證。
+4. `git push -u origin main` 成功。
+
+### 4. 仍可改進：終端機的 `git` 路徑
+
+- 現象：直接執行 `git` 會先找到 `/usr/bin/git`，但這台電腦缺少 Xcode Command Line Tools，會跳出安裝提示：
+
+  ```text
+  xcode-select: note: No developer tools were found, requesting install.
+  ```
+
+- 目前可用：`/opt/homebrew/bin/git`（2.56.0）與 `/opt/homebrew/bin/gh`。
+- 建議（尚未執行）：在 `~/.zprofile` 加入
+  ```sh
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  ```
+  讓 `git`、`gh` 與其他 Homebrew 工具在一般終端機也能直接使用。
+- 待確認：是否要我幫你加入這行設定（會修改 `~/.zprofile`）。
